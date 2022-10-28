@@ -1,0 +1,23 @@
+Config {
+    font          = "xft:inconsolata:size=10:antialias=true"
+  , bgColor       = "#222"
+  , fgColor       = "#eee"
+  , position      = Top
+  , lowerOnStart  = True
+  , border        = BottomB
+  , borderColor   = "#5a5"
+  , commands      =
+    [ Run Date "%d.%m.%Y (%a)" "date" 10
+    , Run Date "%T" "time" 10
+    , Run Network "eth0" ["-L","0","-H","32","--normal","#5a5","--high","#c22", "-t", " <dev> "] 10
+    , Run Network "wlan0" ["-L","0","-H","32","--normal","#5a5", "--high","#c22", "-t", " <dev> "] 10
+    , Run Com "bash" ["/home/vlad/.xmonad/scripts/batteryr.sh", "BAT0", "10", "true"] "bat_r" 30
+    , Run Com "bash" ["/home/vlad/.xmonad/scripts/batteryl.sh", "BAT0", "10", "true"] "bat_l" 30
+    , Run Com "bash" ["/home/vlad/.xmonad/scripts/audio.sh", "12", "true"] "audio" 1
+    , Run Com "bash" ["/home/vlad/.xmonad/scripts/language.sh"] "language" 1
+    , Run UnsafeXPropertyLog "_XMONAD_LOG_0"
+    ] 
+  , sepChar = "%"
+  , alignSep = "}{"
+  , template = "%_XMONAD_LOG_0% } %bat_l% %time% %bat_r% { %audio% %date% %language% |%wlan0%"
+}

@@ -1,0 +1,4 @@
+build-*
+xmonad-*
+xmonad.errors
+xmonad.state
