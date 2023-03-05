@@ -89,15 +89,16 @@ myBorderWidth = 1 -- px
 myWMName           = "HAL-10000"
 myTerminal         = "/usr/bin/alacritty"
 myTerminalClass    = "Alacritty"
+myPassmenu         = "passmenu -nf '#55aa55' -sb '#55aa55'"
 myScreensaver      = "/usr/bin/i3lock -c 252932 -e"
 mySelectScreenshot = "/usr/bin/scrot -s -f -e feh"
 myScreenshot       = "/usr/bin/scrot -e feh"
 myLauncher         = "rofi -show drun -terminal alacritty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'alacritty -e zsh -ic \"{cmd} && read\"'"
 myXmobarrcPath     = "~/.xmonad/.xmobarrc"
-myConkyConfsPath   = ["/home/vlad/.xmonad/conky.conf", "/home/vlad/.xmonad/tasks.conky.conf"]
+myConkyConfsPath   = ["/home/vlad/.xmonad/conky.conf", "/home/vlad/.xmonad/tasks.conky.conf", "/home/vlad/.xmonad/fortune.conky.conf"]
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
-myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x202020 --height 18 --distance 0 --margin 350"
+myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 14 --distance 0 --margin 350"
 myWallpaperChanger = ""
 
 
@@ -185,6 +186,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   , ((modMask .|. shiftMask, xK_h),
      spawn (myTerminal ++ " -e " ++ "htop"))
+
+  , ((modMask .|. controlMask, xK_p),
+     spawn myPassmenu)
 
   --------------------------------------------------------------------
   --- Volume keybindings (to reviw) ----------------------------------
@@ -335,11 +339,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
      spawn myWallpaperChanger)
 
   -- Reboot.
-  , ((modMask .|. controlMask, xK_r),
+  , ((modMask .|. controlMask, xK_x),
      spawn shutdown)
 
   -- Shutdown.
-  , ((modMask .|. controlMask, xK_x),
+  , ((modMask .|. controlMask, xK_r),
      spawn reboot)
   ]
   ++
@@ -384,14 +388,14 @@ myManageHook = composeAll
   [ resource  =? "desktop_window" --> doIgnore
   , isFloat --> doCenterFloat
   , isDialog --> doCenterFloat
-  , className ~? "(DEBUG)" --> doFloat
-  , className ~? "epic" --> doFloat
-  , title ~? "Noita" --> doFloat
-  , title =? "Epic Games Launcher" --> doFloat
-  , title =? myTerminalClass --> insertPosition End Newer
+  , title =? "Elite Dangerous Launcher" --> doFloat
+  , title =? "Tor Browser" --> doFloat
+  , className =? "steam_app_0" --> doFloat
+  , className =? "noita.exe" --> doFloat
+  , appName =? "AIMP" -->doFloat
+  , appName =? "noita.exe" --> doFloat
   , insertPosition Master Newer
   ] <+> manageDocks
-
 
 myHandleEventHook :: Event -> X All
 myHandleEventHook = multiScreenFocusHook
@@ -474,22 +478,23 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
 myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
 myConkySetup (x:xs) = do
-   spawn ("sleep 0.1 && conky -c " ++ x)
    myConkySetup xs
+   spawn ("sleep 0.2 && conky -c " ++ x)
 
 
 myStartupHook :: X ()
 myStartupHook = do
-   spawn $ "bash ~/.screenlayout/default.sh"
    spawn $ "numlockx"
    spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
-   spawn $ "xcompmgr &"
+   spawn $ "bash ~/.screenlayout/default.sh"
    spawn $ "nitrogen --restore"
+   spawn $ "killall xcompmgr; xcompmgr &"
    spawn $ "killall trayer; " ++ myTrayer
    spawn $ "killall conky;"
    myConkySetup myConkyConfsPath
    spawn $ "killall birdtray; birdtray &"
    spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
+   spawn $ "killall syncthingtray; syncthingtray"
    spawn $ "killall twmnd; twmnd&"
    modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
 
