@@ -17,5 +17,5 @@ Config {
     ] 
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%_XMONAD_LOG_0% } %bat_l% %time% %bat_r% { %audio% %date% %language%
+  , template = "%_XMONAD_LOG_0% } %bat_l% %time% %bat_r% { %audio% %date% %language%"
 }
