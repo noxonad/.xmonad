@@ -110,6 +110,12 @@ audioMute = "amixer -q set Master toggle"
 audioLow  = "amixer -q set Master 5%-"
 audioHigh = "amixer -q set Master 5%+"
 
+-- Install playerctl as a dependency
+audioPlay = "playerctl play-pause"
+audioStop = "playerctl stop"
+audioNext = "playerctl next"
+audioPrev = "playerctl previous"
+
 shutdown  = "shutdown now"
 reboot    = "reboot"
 
@@ -191,8 +197,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. controlMask, xK_p),
      spawn myPassmenu)
 
+
   --------------------------------------------------------------------
-  --- Volume keybindings (to reviw) ----------------------------------
+  --- Audio keybindings ----------------------------------------------
   --------------------------------------------------------------------
   -- Mute volume.
   , ((0, xF86XK_AudioMute),
@@ -218,20 +225,21 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. controlMask, xK_k),
      spawn audioHigh)
 
-  --------------------------------------------------------------------
-  --- Audio keybindings (to review) ----------------------------------
-  --------------------------------------------------------------------
   -- Audio previous.
   , ((0, 0x1008FF16),
-     spawn "")
+     spawn audioPrev)
 
   -- Play/pause.
   , ((0, 0x1008FF14),
-     spawn "")
+     spawn audioPlay)
 
   -- Audio next.
   , ((0, 0x1008FF17),
-     spawn "")
+     spawn audioNext)
+
+  -- Audio stop.
+  , ((0, 0x1008FF15),
+     spawn audioStop)
 
   --------------------------------------------------------------------
   ---- Windows xmonad key bindings -----------------------------------
@@ -474,7 +482,16 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
   { ppTitle = xmobarColor xmobarTitleColor "" . shorten 70
   , ppCurrent = xmobarColor xmobarCurrentWorkspaceColor ""
   , ppSep = "   "
+  , ppOrder = \(ws : _ : _ : extras) -> ws : extras
+  , ppExtras  = [ logLayoutOnScreen s
+                , titleColorIsActive s (shortenL (if s == 0 then 90 else 40) $ logTitleOnScreen s)
+                ]
   }
+   where
+    titleColorIsActive n l = do
+      c <- withWindowSet $ return . W.screen . W.current
+      if n == c then xmobarColorL xmobarTitleColor  "" l else xmobarColorL myFocusedBorderColor "" l
+
 
 myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
@@ -497,7 +514,6 @@ myStartupHook = do
    spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
    spawn $ "killall syncthingtray; syncthingtray"
    spawn $ "killall twmnd; twmnd&"
-   modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
 
 
 main :: IO ()
