@@ -484,7 +484,7 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
   , ppSep = "   "
   , ppOrder = \(ws : _ : _ : extras) -> ws : extras
   , ppExtras  = [ logLayoutOnScreen s
-                , titleColorIsActive s (shortenL (if s == 0 then 90 else 40) $ logTitleOnScreen s)
+                , titleColorIsActive s (shortenL (if s == 0 then 783 else 40) $ logTitleOnScreen s)
                 ]
   }
    where
