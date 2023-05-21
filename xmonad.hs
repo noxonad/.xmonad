@@ -86,6 +86,7 @@ myBorderWidth = 1 -- px
 ----------------------------------------------------------------------------------------------------
 ---- ENVIRONMENTAL VARIABLES: You might change it. No you MUST change it to match your preferences -
 ----------------------------------------------------------------------------------------------------
+myHomePath         = "/home/vlad"
 myWMName           = "HAL-10000"
 myTerminal         = "/usr/bin/alacritty"
 myTerminalClass    = "Alacritty"
@@ -95,7 +96,7 @@ mySelectScreenshot = "/usr/bin/scrot -s -f -e feh"
 myScreenshot       = "/usr/bin/scrot -e feh"
 myLauncher         = "rofi -show drun -terminal alacritty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'alacritty -e zsh -ic \"{cmd} && read\"'"
 myXmobarrcPath     = "~/.xmonad/.xmobarrc"
-myConkyConfsPath   = ["/home/vlad/.xmonad/conky.conf", "/home/vlad/.xmonad/tasks.conky.conf", "/home/vlad/.xmonad/fortune.conky.conf"]
+myConkyConfigPath   = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmonad/tasks.conky.conf", myHomePath ++ "/.xmonad/fortune.conky.conf"]
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
 myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
@@ -495,8 +496,8 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
 myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
 myConkySetup (x:xs) = do
-   myConkySetup xs
    spawn ("sleep 1 && conky -c " ++ x)
+   myConkySetup xs
 
 
 myStartupHook :: X ()
@@ -507,12 +508,12 @@ myStartupHook = do
    spawn $ "killall xcompmgr; xcompmgr &"
    spawn $ "killall trayer; " ++ myTrayer
    spawn $ "killall conky;"
-   myConkySetup myConkyConfsPath
    spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
    spawn $ "killall birdtray; birdtray &"
    spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
    spawn $ "killall syncthingtray; syncthingtray"
    spawn $ "killall twmnd; twmnd&"
+   myConkySetup myConkyConfigPath
 
 
 main :: IO ()
