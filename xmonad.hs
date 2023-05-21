@@ -98,7 +98,7 @@ myXmobarrcPath     = "~/.xmonad/.xmobarrc"
 myConkyConfsPath   = ["/home/vlad/.xmonad/conky.conf", "/home/vlad/.xmonad/tasks.conky.conf", "/home/vlad/.xmonad/fortune.conky.conf"]
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
-myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 14 --distance 0 --margin 350"
+myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
 
 
@@ -483,7 +483,7 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
   , ppSep = "   "
   , ppOrder = \(ws : _ : _ : extras) -> ws : extras
   , ppExtras  = [ logLayoutOnScreen s
-                , titleColorIsActive s (shortenL (if s == 0 then 90 else 40) $ logTitleOnScreen s)
+                , titleColorIsActive s (shortenL (if s == 0 then 75 else 25) $ logTitleOnScreen s)
                 ]
   }
    where
@@ -496,19 +496,19 @@ myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
 myConkySetup (x:xs) = do
    myConkySetup xs
-   spawn ("sleep 0.2 && conky -c " ++ x)
+   spawn ("sleep 1 && conky -c " ++ x)
 
 
 myStartupHook :: X ()
 myStartupHook = do
    spawn $ "numlockx"
-   spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
    spawn $ "bash ~/.screenlayout/default.sh"
    spawn $ "nitrogen --restore"
    spawn $ "killall xcompmgr; xcompmgr &"
    spawn $ "killall trayer; " ++ myTrayer
    spawn $ "killall conky;"
    myConkySetup myConkyConfsPath
+   spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
    spawn $ "killall birdtray; birdtray &"
    spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
    spawn $ "killall syncthingtray; syncthingtray"
