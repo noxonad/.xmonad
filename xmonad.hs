@@ -41,7 +41,6 @@ import XMonad.Layout.HintedGrid
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.PerWorkspace
 
-import XMonad.Util.NamedScratchpad
 import XMonad.Util.Loggers (logLayoutOnScreen, logTitleOnScreen, shortenL, wrapL, xmobarColorL)
 import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.Run (spawnPipe, runInTerm)
@@ -50,20 +49,20 @@ import qualified XMonad.Util.ExtensibleState as XS
 
 import XMonad.Actions.CycleWS
 import XMonad.Actions.TiledWindowDragging
-import qualified XMonad.Actions.FlexibleResize as Flex
 import XMonad.Actions.UpdatePointer (updatePointer)
 import XMonad.Actions.OnScreen (onlyOnScreen)
 import XMonad.Actions.Warp (warpToScreen)
 import XMonad.Actions.WindowGo (runOrRaise)
 import Data.List
 import qualified Data.List as L
+import qualified XMonad.Actions.FlexibleResize as Flex
 
 
-----------------------------------------------------------------------------------------------------
----- Colors for windows, bar, windows border etc ---------------------------------------------------
----- Decorative stuff, if you have a different color shceme, change that ---------------------------
----- PRO TIP: change your color scheme to match these colors ---------------------------------------
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Colors for windows, bar, windows border etc ---------------------------------
+-- Decorative stuff, if you have a different color shceme, change that ---------
+-- PRO TIP: change your color scheme to match these colors ---------------------
+--------------------------------------------------------------------------------
 myNormalBorderColor  = "#7c7c7c"
 myFocusedBorderColor = "#55aa55"
 
@@ -83,9 +82,10 @@ myBorderWidth = 1 -- px
 
 
 
-----------------------------------------------------------------------------------------------------
----- ENVIRONMENTAL VARIABLES: You might change it. No you MUST change it to match your preferences -
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- ENVIRONMENTAL VARIABLES -----------------------------------------------------
+--  You might change it. No you MUST change it to match your preferences -------
+--------------------------------------------------------------------------------
 myHomePath         = "/home/vlad"
 myWMName           = "HAL-10000"
 myTerminal         = "/usr/bin/alacritty"
@@ -99,13 +99,15 @@ myXmobarrcPath     = "~/.xmonad/.xmobarrc"
 myConkyConfigPath   = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmonad/tasks.conky.conf", myHomePath ++ "/.xmonad/fortune.conky.conf"]
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
-myTrayer           = "trayer --monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
+myTrayer           = "trayer"
+myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
 
 
-----------------------------------------------------------------------------------------------------
----- SYSTEM VARIABLES: You might want to change it according to the apps you're using --------------
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- SYSTEM VARIABLES ------------------------------------------------------------
+--  You might want to change it according to the apps you're using -------------
+--------------------------------------------------------------------------------
 audioMute = "amixer -q set Master toggle"
 audioLow  = "amixer -q set Master 5%-"
 audioHigh = "amixer -q set Master 5%+"
@@ -119,23 +121,24 @@ audioPrev = "playerctl previous"
 shutdown  = "shutdown now"
 reboot    = "reboot"
 
+--------------------------------------------------------------------------------
+-- Workspaces ------------------------------------------------------------------
+-- Example: <action=`xdotool key super+1 button=1>1</action> -------------------
+--------------------------------------------------------------------------------
+myWorkspacesText :: [[Char]]
+myWorkspacesText = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-myWorkspaces :: [[Char]]
-myWorkspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-actionPrefix, actionButton, actionSuffix :: [Char]
+actionPrefix, actionSuffix :: [Char]
 actionPrefix = "<action=`xdotool key super+"
-actionButton = "` button="
 actionSuffix = "</action>"
 
-addActions :: [(String, Int)] -> String -> String
-addActions [] ws = ws
-addActions (x:xs)
-  ws = addActions xs (actionPrefix ++ k ++ actionButton ++ show b ++ ">" ++ ws ++ actionSuffix)
-  where k = fst x
-        b = snd x
+addActions :: [[Char]] -> [[Char]]
+addActions [] = []
+addActions [x] = [actionPrefix ++ x ++ "`>" ++ x ++ actionSuffix]
+addActions (x:xs) = (actionPrefix ++ x ++ "`>" ++ x ++ actionSuffix) : addActions xs
 
-
+myWorkspaces :: [[Char]]
+myWorkspaces = addActions myWorkspacesText
 
 currentScreen :: X ScreenId
 currentScreen = gets (W.screen . W.current . windowset)
@@ -156,12 +159,13 @@ switchScreen d = do s <- screenBy d
                          Nothing -> return ()
                          Just ws -> windows (W.view ws)
 
+--------------------------------------------------------------------------------
+-- Keybindings -----------------------------------------------------------------
+--------------------------------------------------------------------------------
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
-
-  --------------------------------------------------------------------
-  --- Personal keybindings -------------------------------------------
-  --------------------------------------------------------------------
-  -- Start a terminal.
+  -------------------------
+  -- Personal keybindings -
+  -------------------------
   [ ((modMask, xK_Return),
      spawn $ XMonad.terminal conf)
 
@@ -198,9 +202,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
      spawn myPassmenu)
 
 
-  --------------------------------------------------------------------
-  --- Audio keybindings ----------------------------------------------
-  --------------------------------------------------------------------
+  ----------------------
+  -- Audio keybindings -
+  ----------------------
   -- Mute volume.
   , ((0, xF86XK_AudioMute),
      spawn audioMute)
@@ -241,9 +245,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((0, 0x1008FF15),
      spawn audioStop)
 
-  --------------------------------------------------------------------
-  ---- Windows xmonad key bindings -----------------------------------
-  --------------------------------------------------------------------
+  --------------------------------
+  -- Windows xmonad key bindings -
+  --------------------------------
   -- Close focused window.
   , ((modMask .|. shiftMask, xK_q),
      kill)
@@ -328,7 +332,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   , ((modMask .|. shiftMask, xK_comma),
     switchScreen 1)
-  
+
   , ((modMask .|. shiftMask, xK_period),
     shiftNextScreen)
 
@@ -337,7 +341,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
 
   -- Quit xmonad.
   , ((modMask .|. shiftMask .|. controlMask, xK_e),
-     io (exitWith ExitSuccess))
+     io exitSuccess)
 
   -- Restart xmonad.
   , ((modMask .|. shiftMask .|. controlMask, xK_r),
@@ -356,14 +360,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
      spawn reboot)
   ]
   ++
-
   -- mod-{w,e,r}, Switch to physical/Xinerama screens 1, 2, or 3
   -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
   [((m .|. modMask, k), windows $ onCurrentScreen f i)
       | (i, k) <- zip (workspaces' conf) [xK_1 .. xK_9]
       , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
-
-
 
 myMouseBindings :: XConfig l -> M.Map (KeyMask, Button) (Window -> X ())
 myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
@@ -375,50 +376,35 @@ myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
   , ((modm, button5), \_ -> moveTo Next workspaceOnCurrentScreen)
   ]
 
-
+--------------------------------------------------------------------------------
+-- Layouts ---------------------------------------------------------------------
+--------------------------------------------------------------------------------
 myLayoutHook = avoidStruts (
    ThreeColMid 1 (3/100) (1/2) |||
-   Tall 1 (3/100) (1/2) |||
    Mirror (Tall 1 (3/100) (1/2)) |||
    tabbed shrinkText tabConfig |||
    noBorders (fullscreenFull Full) |||
    spiral (6/7))
 
 
-
+--------------------------------------------------------------------------------
+-- Magifuckery -----------------------------------------------------------------
+--------------------------------------------------------------------------------
 (~?) :: Eq a => Query [a] -> [a] -> Query Bool
 q ~? x = fmap (x `L.isInfixOf`) q
 
 (/=?) :: Eq a => Query a -> a -> Query Bool
 q /=? x = fmap (/= x) q
 
-myManageHook :: ManageHook
-myManageHook = composeAll
-  [ resource  =? "desktop_window" --> doIgnore
-  , isFloat --> doCenterFloat
-  , isDialog --> doCenterFloat
-  , title =? "Elite Dangerous Launcher" --> doFloat
-  , title =? "Tor Browser" --> doFloat
-  , className =? "steam_app_0" --> doFloat
-  , className =? "noita.exe" --> doFloat
-  , appName =? "AIMP" -->doFloat
-  , appName =? "noita.exe" --> doFloat
-  , insertPosition Master Newer
-  ] <+> manageDocks
-
 myHandleEventHook :: Event -> X All
 myHandleEventHook = multiScreenFocusHook
-                <+> swallowEventHook (className =? myTerminalClass) (return True)
-
 
 screenCount :: X Int
 screenCount = withDisplay (io.fmap length.getScreenInfo)
 
-
 newtype MyUpdatePointerActive = MyUpdatePointerActive Bool
 instance ExtensionClass MyUpdatePointerActive where
    initialValue = MyUpdatePointerActive True
-
 
 myUpdatePointer :: (Rational, Rational) -> (Rational, Rational) -> X ()
 myUpdatePointer refPos ratio =
@@ -431,7 +417,6 @@ myUpdatePointer refPos ratio =
 
   where
     isActive = (\(MyUpdatePointerActive b) -> b) <$> XS.get
-
 
 multiScreenFocusHook :: Event -> X All
 multiScreenFocusHook MotionEvent { ev_x = x, ev_y = y } = do
@@ -461,15 +446,26 @@ multiScreenFocusHook MotionEvent { ev_x = x, ev_y = y } = do
 multiScreenFocusHook _ = return (All True)
 
 
+--------------------------------------------------------------------------------
+-- How the individual windows are shown ---------------------------------------- 
+--------------------------------------------------------------------------------
+myManageHook :: ManageHook
+myManageHook = composeAll
+  [ resource  =? "desktop_window" --> doIgnore
+  , isFloat --> doCenterFloat
+  , isDialog --> doCenterFloat
+  , title =? "Tor Browser" --> doFloat
+  , className =? "steam_app_0" --> doFloat
+  , className =? "noita.exe" --> doFloat
+  , appName =? "AIMP" -->doFloat
+  , appName =? "noita.exe" --> doFloat
+  , insertPosition Master Newer
+  ] <+> manageDocks
 
-myWorkspaceIndices :: M.Map [Char] Integer
-myWorkspaceIndices = M.fromList $ zip myWorkspaces [1..]
 
-clickable :: [Char] -> [Char] -> [Char]
-clickable icon ws = 
-  addActions [ (show i, 1), ("q", 2), ("Left", 4), ("Right", 5) ] icon
-  where i = fromJust $ M.lookup ws myWorkspaceIndices
-
+--------------------------------------------------------------------------------
+-- Status/Top Bar --------------------------------------------------------------
+--------------------------------------------------------------------------------
 myStatusBarSpawner :: Applicative f => ScreenId -> f StatusBarConfig
 myStatusBarSpawner (S s) = do
   pure $ statusBarPropTo ("_XMONAD_LOG_" ++ show s)
@@ -478,7 +474,7 @@ myStatusBarSpawner (S s) = do
 
 
 myXmobarPP :: ScreenId -> PP
-myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
+myXmobarPP s  = marshallPP s $ def
   { ppTitle = xmobarColor xmobarTitleColor "" . shorten 70
   , ppCurrent = xmobarColor xmobarCurrentWorkspaceColor ""
   , ppSep = "   "
@@ -492,30 +488,39 @@ myXmobarPP s  = filterOutWsPP [scratchpadWorkspaceTag] . marshallPP s $ def
       c <- withWindowSet $ return . W.screen . W.current
       if n == c then xmobarColorL xmobarTitleColor  "" l else xmobarColorL myFocusedBorderColor "" l
 
-
+--------------------------------------------------------------------------------
+-- Conky (on-screen customizable info) -----------------------------------------
+--------------------------------------------------------------------------------
 myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
 myConkySetup (x:xs) = do
    spawn ("sleep 1 && conky -c " ++ x)
    myConkySetup xs
 
-
+--------------------------------------------------------------------------------
+-- What apps should load on login/restart --------------------------------------
+--------------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
    spawn $ "numlockx"
-   spawn $ "bash ~/.screenlayout/default.sh"
+   spawn $ "bash ~/.xmonad/.screenlayout/HAL-10000L.sh"
    spawn $ "nitrogen --restore"
    spawn $ "killall xcompmgr; xcompmgr &"
-   spawn $ "killall trayer; " ++ myTrayer
+   spawn $ "killall " ++ myTrayer ++ "; " ++ myTrayer ++ " " ++ myTrayerArgs
    spawn $ "killall conky;"
    spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
    spawn $ "killall birdtray; birdtray &"
    spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
    spawn $ "killall syncthingtray; syncthingtray"
-   spawn $ "killall twmnd; twmnd&"
+   spawn $ "killall twmnd; twmnd &"
+   spawn $ "killall pulseaudio; pulseaudio --start &"
    myConkySetup myConkyConfigPath
+   modify $ \xstate -> xstate { windowset = onlyOnScreen 2 "1_1" (windowset xstate) }
 
 
+--------------------------------------------------------------------------------
+-- EXECUTEEEEE -----------------------------------------------------------------
+--------------------------------------------------------------------------------
 main :: IO ()
 main = xmonad
      . ewmh
@@ -537,6 +542,5 @@ main = xmonad
        , manageHook         = myManageHook
        , startupHook        = myStartupHook
        , rootMask           = rootMask def .|. pointerMotionMask
-       , logHook            = logHook def <+> myUpdatePointer (0.75, 0.75) (0, 0)
        , handleEventHook    = myHandleEventHook
        }

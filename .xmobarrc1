@@ -9,10 +9,10 @@ Config {
   , commands      =
     [ Run Date "%d.%m.%Y (%a)" "date" 10
     , Run Date "%T" "time" 10
-    , Run Com "bash" ["/home/vlad/.xmonad/scripts/batteryr.sh", "BAT0", "10", "true"] "bat_r" 30
-    , Run Com "bash" ["/home/vlad/.xmonad/scripts/batteryl.sh", "BAT0", "10", "true"] "bat_l" 30
-    , Run Com "bash" ["/home/vlad/.xmonad/scripts/audio.sh", "12", "true"] "audio" 10
-    , Run Com "bash" ["/home/vlad/.xmonad/scripts/language.sh"] "language" 10
+    , Run Com "bash" ["/home/nox/.xmonad/scripts/batteryr.sh", "BAT0", "10", "true"] "bat_r" 30
+    , Run Com "bash" ["/home/nox/.xmonad/scripts/batteryl.sh", "BAT0", "10", "true"] "bat_l" 30
+    , Run Com "bash" ["/home/nox/.xmonad/scripts/audio.sh", "12", "true"] "audio" 10
+    , Run Com "bash" ["/home/nox/.xmonad/scripts/language.sh"] "language" 10
     , Run UnsafeXPropertyLog "_XMONAD_LOG_1"
     ] 
   , sepChar = "%"
