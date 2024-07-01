@@ -1,61 +1,70 @@
-import XMonad
-import System.Exit
-import System.IO
-import Prelude hiding (log)
-import qualified XMonad.StackSet as W
-import qualified Data.Map as M
-import Data.Maybe (fromJust)
-import Data.Semigroup
-import Data.Bits (testBit)
-import Control.Monad (unless, when)
-import Foreign.C (CInt)
-import Data.Foldable (find)
-import Graphics.X11.Xinerama (getScreenInfo)
-import Graphics.X11.ExtraTypes.XF86
+import           Control.Monad                       (unless, when)
+import           Data.Bits                           (testBit)
+import           Data.Foldable                       (find)
+import qualified Data.Map                            as M
+import           Data.Maybe                          (fromJust)
+import           Data.Semigroup
+import           Foreign.C                           (CInt)
+import           Graphics.X11.ExtraTypes.XF86
+import           Graphics.X11.Xinerama               (getScreenInfo)
+import           Prelude                             hiding (log)
+import           System.Exit
+import           System.IO
+import           XMonad
+import qualified XMonad.StackSet                     as W
 
-import XMonad.Hooks.DynamicProperty
-import XMonad.Hooks.DynamicLog
-import XMonad.Hooks.InsertPosition (insertPosition, Focus(Newer), Position (Master, End))
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Hooks.WindowSwallowing
-import XMonad.Hooks.SetWMName
-import XMonad.Hooks.StatusBar
-import XMonad.Hooks.ManageHelpers (isDialog, doCenterFloat, doSink)
-import XMonad.Hooks.RefocusLast (isFloat)
+import           XMonad.Hooks.DynamicLog
+--import           XMonad.Hooks.DynamicProperty
+import           XMonad.Hooks.EwmhDesktops
+import           XMonad.Hooks.InsertPosition         (Focus (Newer),
+                                                      Position (End, Master),
+                                                      insertPosition)
+import           XMonad.Hooks.ManageDocks
+import           XMonad.Hooks.ManageHelpers
+import           XMonad.Hooks.RefocusLast            (isFloat)
+import           XMonad.Hooks.SetWMName
+import           XMonad.Hooks.StatusBar
+import           XMonad.Hooks.UrgencyHook
+import           XMonad.Hooks.WindowSwallowing
 
-import XMonad.Layout.Spacing (Spacing, spacingRaw, Border (Border))
-import XMonad.Layout.NoBorders (smartBorders)
-import XMonad.Layout.Named (named)
-import XMonad.Layout.Decoration (ModifiedLayout)
-import XMonad.Layout.DraggingVisualizer (draggingVisualizer)
-import XMonad.Layout.MultiToggle.Instances (StdTransformers (NBFULL))
-import XMonad.Layout.MultiToggle (EOT (EOT), Toggle (Toggle), mkToggle, (??))
-import XMonad.Layout.MouseResizableTile
-import XMonad.Layout.Fullscreen
-import XMonad.Layout.Tabbed
-import XMonad.Layout.IndependentScreens
-import XMonad.Layout.NoBorders
-import XMonad.Layout.Spiral
-import XMonad.Layout.HintedGrid
-import XMonad.Layout.ThreeColumns
-import XMonad.Layout.PerWorkspace
+import           XMonad.Layout.Decoration            (ModifiedLayout)
+import           XMonad.Layout.DraggingVisualizer    (draggingVisualizer)
+import           XMonad.Layout.Fullscreen
+import           XMonad.Layout.HintedGrid
+import           XMonad.Layout.IndependentScreens
+import           XMonad.Layout.MouseResizableTile
+import           XMonad.Layout.MultiToggle           (EOT (EOT),
+                                                      Toggle (Toggle), mkToggle,
+                                                      (??))
+import           XMonad.Layout.MultiToggle.Instances (StdTransformers (NBFULL))
+--import           XMonad.Layout.Named                 (named)
+import           XMonad.Layout.NoBorders
+import           XMonad.Layout.NoBorders             (smartBorders)
+import           XMonad.Layout.PerWorkspace
+import           XMonad.Layout.Spacing               (Border (Border), Spacing,
+                                                      spacingRaw)
+import           XMonad.Layout.Spiral
+import           XMonad.Layout.Tabbed
+import           XMonad.Layout.ThreeColumns
 
-import XMonad.Util.Loggers (logLayoutOnScreen, logTitleOnScreen, shortenL, wrapL, xmobarColorL)
-import XMonad.Util.EZConfig (additionalKeysP)
-import XMonad.Util.Run (spawnPipe, runInTerm)
-import XMonad.Util.SpawnOnce
-import qualified XMonad.Util.ExtensibleState as XS
+import qualified XMonad.Util.ExtensibleState         as XS
+import           XMonad.Util.EZConfig                (additionalKeysP)
+import           XMonad.Util.Loggers                 (logLayoutOnScreen,
+                                                      logTitleOnScreen,
+                                                      shortenL, wrapL,
+                                                      xmobarColorL)
+import           XMonad.Util.Run                     (runInTerm, spawnPipe)
+import           XMonad.Util.SpawnOnce
 
-import XMonad.Actions.CycleWS
-import XMonad.Actions.TiledWindowDragging
-import XMonad.Actions.UpdatePointer (updatePointer)
-import XMonad.Actions.OnScreen (onlyOnScreen)
-import XMonad.Actions.Warp (warpToScreen)
-import XMonad.Actions.WindowGo (runOrRaise)
-import Data.List
-import qualified Data.List as L
-import qualified XMonad.Actions.FlexibleResize as Flex
+import           Data.List
+import qualified Data.List                           as L
+import           XMonad.Actions.CycleWS
+import qualified XMonad.Actions.FlexibleResize       as Flex
+import           XMonad.Actions.OnScreen             (onlyOnScreen)
+import           XMonad.Actions.TiledWindowDragging
+import           XMonad.Actions.UpdatePointer        (updatePointer)
+import           XMonad.Actions.Warp                 (warpToScreen)
+import           XMonad.Actions.WindowGo             (runOrRaise)
 
 
 --------------------------------------------------------------------------------
@@ -86,22 +95,22 @@ myBorderWidth = 1 -- px
 -- ENVIRONMENTAL VARIABLES -----------------------------------------------------
 --  You might change it. No you MUST change it to match your preferences -------
 --------------------------------------------------------------------------------
-myHomePath         = "/home/vlad"
+myHomePath         = "/home/nox"
 myWMName           = "HAL-10000"
-myTerminal         = "/usr/bin/alacritty"
-myTerminalClass    = "Alacritty"
+myTerminal         = "/usr/bin/kitty"
+myTerminalClass    = "Kitty"
 myPassmenu         = "passmenu -nf '#55aa55' -sb '#55aa55'"
 myScreensaver      = "/usr/bin/i3lock -c 252932 -e"
-mySelectScreenshot = "/usr/bin/scrot -s -f -e feh"
-myScreenshot       = "/usr/bin/scrot -e feh"
-myLauncher         = "rofi -show drun -terminal alacritty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'alacritty -e zsh -ic \"{cmd} && read\"'"
+myScreenshot       = "flameshot gui"
+myLauncher         = "rofi -show drun -terminal kitty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'kitty -e zsh -ic \"{cmd} && read\"'"
 myXmobarrcPath     = "~/.xmonad/.xmobarrc"
-myConkyConfigPath   = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmonad/tasks.conky.conf", myHomePath ++ "/.xmonad/fortune.conky.conf"]
+myConkyConfigPath  = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmonad/tasks.conky.conf", myHomePath ++ "/.xmonad/fortune.conky.conf"]
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
 myTrayer           = "trayer"
-myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --iconspacing 6 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
+myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
+myWebBrowser       = "chromium-browser?"
 
 
 --------------------------------------------------------------------------------
@@ -178,13 +187,12 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. shiftMask, xK_Return),
      spawn myLauncher)
 
-  -- Take a selective screenshot using the command specified by mySelectScreenshot.
-  , ((modMask .|. shiftMask, xK_p),
-     spawn mySelectScreenshot)
+  -- Take a selective screenshot using the command specified by myScreenshot.
+   , ((0, xK_Print),
+      spawn myScreenshot)
 
-  -- Take a full screenshot using the command specified by myScreenshot.
-  , ((modMask .|. controlMask .|. shiftMask, xK_p),
-     spawn myScreenshot)
+  , ((modMask, xK_f),
+     spawn myWebBrowser)
 
   , ((modMask .|. shiftMask, xK_c),
      spawn (myTerminal ++ " -e " ++ myCalendar))
@@ -256,7 +264,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_space),
      sendMessage NextLayout)
 
-  --  Reset the layouts on the current workspace to default.
+  -- Reset the layouts on the current workspace to default.
   , ((modMask .|. shiftMask, xK_space),
      setLayout $ XMonad.layoutHook conf)
 
@@ -447,7 +455,7 @@ multiScreenFocusHook _ = return (All True)
 
 
 --------------------------------------------------------------------------------
--- How the individual windows are shown ---------------------------------------- 
+-- How the individual windows are shown ----------------------------------------
 --------------------------------------------------------------------------------
 myManageHook :: ManageHook
 myManageHook = composeAll
@@ -480,7 +488,7 @@ myXmobarPP s  = marshallPP s $ def
   , ppSep = "   "
   , ppOrder = \(ws : _ : _ : extras) -> ws : extras
   , ppExtras  = [ logLayoutOnScreen s
-                , titleColorIsActive s (shortenL (if s == 0 then 75 else 25) $ logTitleOnScreen s)
+                , titleColorIsActive s (shortenL (if s == 0 then 25 else 75) $ logTitleOnScreen s)
                 ]
   }
    where
@@ -493,8 +501,9 @@ myXmobarPP s  = marshallPP s $ def
 --------------------------------------------------------------------------------
 myConkySetup :: [String] -> X ()
 myConkySetup [] = return ()
+myConkySetup [x] = do spawn ("conky --pause=2 -c " ++ x)
 myConkySetup (x:xs) = do
-   spawn ("sleep 1 && conky -c " ++ x)
+   spawn ("conky --pause=2 -c " ++ x)
    myConkySetup xs
 
 --------------------------------------------------------------------------------
@@ -502,29 +511,34 @@ myConkySetup (x:xs) = do
 --------------------------------------------------------------------------------
 myStartupHook :: X ()
 myStartupHook = do
-   spawn $ "numlockx"
-   spawn $ "bash ~/.xmonad/.screenlayout/HAL-10000L.sh"
-   spawn $ "nitrogen --restore"
-   spawn $ "killall xcompmgr; xcompmgr &"
-   spawn $ "killall " ++ myTrayer ++ "; " ++ myTrayer ++ " " ++ myTrayerArgs
-   spawn $ "killall conky;"
-   spawn $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
-   spawn $ "killall birdtray; birdtray &"
-   spawn $ "killall kdeconnect-indicator; kdeconnect-indicator &"
-   spawn $ "killall syncthingtray; syncthingtray"
-   spawn $ "killall twmnd; twmnd &"
-   spawn $ "killall pulseaudio; pulseaudio --start &"
-   myConkySetup myConkyConfigPath
-   modify $ \xstate -> xstate { windowset = onlyOnScreen 2 "1_1" (windowset xstate) }
-
+   spawnOnce $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
+   spawnOnce $ "bash ~/.xmonad/.screenlayout/HAL-10000-1.sh"
+   spawnOnce $ "nitrogen --restore"
+   spawnOnce $ "xcompmgr &"
+   spawnOnce $ myTrayer ++ " " ++ myTrayerArgs
+   spawnOnce $ "conky -c /home/nox/.xmonad/conky.conf & conky -c /home/nox/.xmonad/fortune.conky.conf & conky -c /home/nox/.xmonad/tasks.conky.conf &"
+   spawnOnce $ "birdtray &"
+   spawnOnce $ "kdeconnect-indicator &"
+   -- spawnOnce $ "syncthingtray &"
+   spawnOnce $ "twmnd &"
+   spawnOnce $ "nextcloud &"
+   spawnOnce $ "ibus start &"
+   -- myConkySetup myConkyConfigPath
+   modify $ \xstate -> xstate { windowset = onlyOnScreen 0 "0_1" (windowset xstate) }
+   modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
+   -- For java compatibility
+   --  [see this bug](https://wiki.archlinux.org/title/Java#Gray_window,_applications_not_resizing_with_WM,_menus_immediately_closing)
+   setWMName "LG3D"
+   
 
 --------------------------------------------------------------------------------
 -- EXECUTEEEEE -----------------------------------------------------------------
 --------------------------------------------------------------------------------
 main :: IO ()
 main = xmonad
-     . ewmh
      . ewmhFullscreen
+     . setEwmhActivateHook doAskUrgent
+     . ewmh
      . dynamicSBs myStatusBarSpawner
      . docks
      $ def

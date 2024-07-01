@@ -1,3 +1,2 @@
 #!/bin/bash
-language=`xkblayout-state print "%n"`
-echo ${language:0:2}
+echo $($HOME/.xmonad/xkblayout-state/xkblayout-state print "%n" | head -c2)
