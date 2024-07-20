@@ -62,6 +62,7 @@ import           XMonad.Actions.CycleWS
 import qualified XMonad.Actions.FlexibleResize       as Flex
 import           XMonad.Actions.OnScreen             (onlyOnScreen)
 import           XMonad.Actions.TiledWindowDragging
+import           XMonad.Actions.UpdateFocus
 import           XMonad.Actions.UpdatePointer        (updatePointer)
 import           XMonad.Actions.Warp                 (warpToScreen)
 import           XMonad.Actions.WindowGo             (runOrRaise)
@@ -99,8 +100,8 @@ myHomePath         = "/home/nox"
 myWMName           = "HAL-10000"
 myTerminal         = "/usr/bin/kitty"
 myTerminalClass    = "Kitty"
-myPassmenu         = "passmenu -nf '#55aa55' -sb '#55aa55'"
-myScreensaver      = "/usr/bin/i3lock -c 252932 -e"
+myPassmenu         = "keepmenu --clipboard"--"passmenu -nf '#55aa55' -sb '#55aa55'"
+myScreensaver      = "/usr/bin/i3lock -c 111111 -e"
 myScreenshot       = "flameshot gui"
 myLauncher         = "rofi -show drun -terminal kitty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'kitty -e zsh -ic \"{cmd} && read\"'"
 myXmobarrcPath     = "~/.xmonad/.xmobarrc"
@@ -108,7 +109,7 @@ myConkyConfigPath  = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmon
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
 myTrayer           = "trayer"
-myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
+myTrayerArgs       = "--monitor 1 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
 myWebBrowser       = "chromium-browser?"
 
@@ -117,9 +118,9 @@ myWebBrowser       = "chromium-browser?"
 -- SYSTEM VARIABLES ------------------------------------------------------------
 --  You might want to change it according to the apps you're using -------------
 --------------------------------------------------------------------------------
-audioMute = "amixer -q set Master toggle"
-audioLow  = "amixer -q set Master 5%-"
-audioHigh = "amixer -q set Master 5%+"
+audioMute = "pactl set-sink-mute 0 toggle"
+audioLow  = "pactl set-sink-volume 0 -5%"
+audioHigh = "pactl set-sink-volume 0 +5%"
 
 -- Install playerctl as a dependency
 audioPlay = "playerctl play-pause"
@@ -512,8 +513,8 @@ myConkySetup (x:xs) = do
 myStartupHook :: X ()
 myStartupHook = do
    spawnOnce $ "setxkbmap -layout us,ru,ro -option grp:caps_toggle -variant ,,std"
-   spawnOnce $ "bash ~/.xmonad/.screenlayout/HAL-10000-1.sh"
-   spawnOnce $ "nitrogen --restore"
+   spawn $ "bash ~/.xmonad/.screenlayout/HAL-10000-1.sh"
+   spawn $ "nitrogen --restore"
    spawnOnce $ "xcompmgr &"
    spawnOnce $ myTrayer ++ " " ++ myTrayerArgs
    spawnOnce $ "conky -c /home/nox/.xmonad/conky.conf & conky -c /home/nox/.xmonad/fortune.conky.conf & conky -c /home/nox/.xmonad/tasks.conky.conf &"
@@ -522,7 +523,7 @@ myStartupHook = do
    -- spawnOnce $ "syncthingtray &"
    spawnOnce $ "twmnd &"
    spawnOnce $ "nextcloud &"
-   spawnOnce $ "ibus start &"
+   spawnOnce $ "fcitx5 &"
    -- myConkySetup myConkyConfigPath
    modify $ \xstate -> xstate { windowset = onlyOnScreen 0 "0_1" (windowset xstate) }
    modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }
