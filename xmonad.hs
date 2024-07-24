@@ -112,6 +112,7 @@ myTrayer           = "trayer"
 myTrayerArgs       = "--monitor 1 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
 myWebBrowser       = "chromium-browser?"
+myNextcloudSync    = "com.nextcloud.desktopclient.nextcloud"
 
 
 --------------------------------------------------------------------------------
@@ -522,7 +523,7 @@ myStartupHook = do
    spawnOnce $ "kdeconnect-indicator &"
    -- spawnOnce $ "syncthingtray &"
    spawnOnce $ "twmnd &"
-   spawnOnce $ "nextcloud &"
+   spawnOnce $ myNextcloudSync
    spawnOnce $ "fcitx5 &"
    -- myConkySetup myConkyConfigPath
    modify $ \xstate -> xstate { windowset = onlyOnScreen 0 "0_1" (windowset xstate) }
