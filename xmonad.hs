@@ -208,6 +208,9 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. shiftMask, xK_h),
      spawn (myTerminal ++ " -e " ++ "htop"))
 
+  , ((modMask .|. shiftMask, xK_i),
+     spawn (myTerminal ++ " -e " ++ "insect"))
+
   , ((modMask .|. controlMask, xK_p),
      spawn myPassmenu)
 
@@ -490,7 +493,7 @@ myXmobarPP s  = marshallPP s $ def
   , ppSep = "   "
   , ppOrder = \(ws : _ : _ : extras) -> ws : extras
   , ppExtras  = [ logLayoutOnScreen s
-                , titleColorIsActive s (shortenL (if s == 0 then 25 else 75) $ logTitleOnScreen s)
+                , titleColorIsActive s (shortenL (if s == 0 then 75 else 75) $ logTitleOnScreen s)
                 ]
   }
    where
