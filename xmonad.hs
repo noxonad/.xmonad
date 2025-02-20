@@ -74,7 +74,7 @@ import           XMonad.Actions.WindowGo             (runOrRaise)
 -- PRO TIP: change your color scheme to match these colors ---------------------
 --------------------------------------------------------------------------------
 myNormalBorderColor  = "#7c7c7c"
-myFocusedBorderColor = "#55aa55"
+myFocusedBorderColor = "#689349"
 
 tabConfig = def {
     activeBorderColor = "#7C7C7C",
@@ -86,7 +86,7 @@ tabConfig = def {
 }
 
 -- xmobar settings
-xmobarTitleColor = "#55aa55"
+xmobarTitleColor = "#689349"
 xmobarCurrentWorkspaceColor = "#CEFFAC"
 myBorderWidth = 1 -- px
 
@@ -100,7 +100,7 @@ myHomePath         = "/home/nox"
 myWMName           = "HAL-10000"
 myTerminal         = "/usr/bin/kitty"
 myTerminalClass    = "Kitty"
-myPassmenu         = "keepmenu --clipboard"--"passmenu -nf '#55aa55' -sb '#55aa55'"
+myPassmenu         = "keepmenu --clipboard" --"passmenu -nf '#689349 -sb '#689349"
 myScreensaver      = "/usr/bin/i3lock -c 111111 -e"
 myScreenshot       = "flameshot gui"
 myLauncher         = "rofi -show drun -terminal kitty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'kitty -e zsh -ic \"{cmd} && read\"'"
@@ -109,7 +109,7 @@ myConkyConfigPath  = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmon
 myCalendar         = "calcurse"
 myTaskmanager      = "tasksh"
 myTrayer           = "trayer"
-myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x222222 --height 15 --distance 0 --margin 350"
+myTrayerArgs       = "--monitor 0 --edge top --align right --widthtype request --padding 15 --SetDockType true --SetPartialStrut true --expand true --transparent true --alpha 0 --tint 0x1a1a1a --height 15 --distance 0 --margin 350"
 myWallpaperChanger = ""
 myWebBrowser       = "chromium-browser?"
 myNextcloudSync    = "nextcloud"
@@ -529,6 +529,8 @@ myStartupHook = do
    spawnOnce $ myNextcloudSync
    spawnOnce $ "fcitx5 &"
    spawnOnce $ "numlockx &"
+   spawnOnce $ "/usr/bin/steam -silent"
+   spawnOnce $ "/usr/bin/emacs --daemon"
    -- myConkySetup myConkyConfigPath
    modify $ \xstate -> xstate { windowset = onlyOnScreen 0 "0_1" (windowset xstate) }
    modify $ \xstate -> xstate { windowset = onlyOnScreen 1 "1_1" (windowset xstate) }

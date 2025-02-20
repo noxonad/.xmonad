@@ -1,11 +1,11 @@
 Config {
     font          = "xft:inconsolata 10"
-  , bgColor       = "#222222"
+  , bgColor       = "#1a1a1a"
   , fgColor       = "#eeeeee"
   , position      = Top
   , lowerOnStart  = True
   , border        = BottomB
-  , borderColor   = "#55aa55"
+  , borderColor   = "#689349"
   , commands      =
     [ Run Date "%d.%m.%Y (%a)" "date" 10
     , Run Date "%T" "time" 10
