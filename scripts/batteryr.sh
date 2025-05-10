@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # Input
@@ -50,7 +50,7 @@ color_end="</fc>"
 bar=""
 
 percentage=$(upower -i /org/freedesktop/UPower/devices/battery_${battery} | grep -m1 -i "percentage:" | sed -e "s/.*\ \s\(.*\)%.*/\1/")
-percentage=$((((len * ((percentage + len - 1) / len) * len)) / 100))
+percentage=$(((len * (percentage + len - 1)) / 100))
 
 #
 # Blinking color
@@ -59,15 +59,15 @@ percentage=$((((len * ((percentage + len - 1) / len) * len)) / 100))
 # param 3: Character
 # param 4: color end
 #
-function blink() {
-  time=$(date +%s)
-  if (($time % 2 == 1)); then
-    bar+=$1
+blink() {
+  time=$(($(date +%s) % 2))
+  if [ "$time" -eq 1 ]; then
+    bar="$bar$1"
   else
-    bar+=$2
+    bar="$bar$2"
   fi
-  bar+=$3
-  bar+=$4
+  bar="$bar$3"
+  bar="$bar$4"
 }
 
 #
@@ -80,40 +80,40 @@ function blink() {
 # param 6: end of color
 # return:  colored string
 #
-function color() {
-  if [[ $enable_color == "bi" ]]; then
-    bar+=$1
-  elif [[ $enable_color == "true" ]]; then
+color() {
+  if [ "$enable_color" = "bi" ]; then
+    bar="$bar$1"
+  elif [ "$enable_color" = "true" ]; then
     if [ $percentage -le 3 ]; then
-      bar+=$2
+      bar="$bar$2"
     elif [ $percentage -le 6 ]; then
-      bar+=$3
+      bar="$bar$3"
     else
-      bar+=$4
+      bar="$bar$4"
     fi
   fi
-  bar+=$5
-  if [[ $enable_color == "bi" ]] || [[ $enable_color == "true" ]]; then
-    bar+=$6
+  bar="$bar$5"
+  if [ "$enable_color" = "bi" ] || [ "$enable_color" = "true" ]; then
+    bar="$bar$6"
   fi
 }
 
-for i in $(seq 0 $len); do
-  if [[ $i -eq $percentage ]]; then
-    if [[ $(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -m1 -i "state:" | sed -e "s/.*\ \s\(.*\)/\1/") == "discharging" ]]; then
+for i in $(seq 0 "$len"); do
+  if [ "$i" -eq $percentage ]; then
+    if [ "$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -m1 -i "state:" | sed -e "s/.*\ \s\(.*\)/\1/")" = "discharging" ]; then
       blink $delimiter_color_begin $delimiter_discharging_color_begin $delimiter $color_end
-    elif [[ $(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -m1 -i "state:" | sed -e "s/.*\ \s\(.*\)/\1/") == "charging" ]]; then
+    elif [ "$(upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -m1 -i "state:" | sed -e "s/.*\ \s\(.*\)/\1/")" = "charging" ]; then
       blink $delimiter_color_begin $delimiter_charging_color_begin $delimiter $color_end
     else
       color $delimiter_color_begin $delimiter_color_begin $delimiter_color_begin $delimiter_color_begin $delimiter $color_end
     fi
-  elif [[ $i -lt $percentage ]]; then
+  elif [ $i -lt $percentage ]; then
     color $active_color_begin $low_color_begin $med_color_begin $full_color_begin $chr $color_end
   else
     color $inactive_color_begin $inactive_color_begin $inactive_color_begin $inactive_color_begin $chr $color_end
   fi
 done
 
-echo $bar
+echo "$bar"
 exit 0
 

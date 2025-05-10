@@ -14,7 +14,6 @@ import           XMonad
 import qualified XMonad.StackSet                     as W
 
 import           XMonad.Hooks.DynamicLog
---import           XMonad.Hooks.DynamicProperty
 import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.InsertPosition         (Focus (Newer),
                                                       Position (End, Master),
@@ -37,7 +36,6 @@ import           XMonad.Layout.MultiToggle           (EOT (EOT),
                                                       Toggle (Toggle), mkToggle,
                                                       (??))
 import           XMonad.Layout.MultiToggle.Instances (StdTransformers (NBFULL))
---import           XMonad.Layout.Named                 (named)
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.NoBorders             (smartBorders)
 import           XMonad.Layout.PerWorkspace
@@ -103,6 +101,7 @@ myTerminalClass    = "Kitty"
 myPassmenu         = "keepmenu --clipboard" --"passmenu -nf '#689349 -sb '#689349"
 myScreensaver      = "/usr/bin/i3lock -c 111111 -e"
 myScreenshot       = "flameshot gui"
+myNotifManager     = "dunst"
 myLauncher         = "rofi -show drun -terminal kitty -icon-theme 'Papirus' -show-icons -font 'hack 10' -run-shell-command 'kitty -e zsh -ic \"{cmd} && read\"'"
 myXmobarrcPath     = "~/.xmonad/.xmobarrc"
 myConkyConfigPath  = [myHomePath ++ "/.xmonad/conky.conf", myHomePath ++ "/.xmonad/tasks.conky.conf", myHomePath ++ "/.xmonad/fortune.conky.conf"]
@@ -525,7 +524,7 @@ myStartupHook = do
    spawnOnce $ "birdtray &"
    spawnOnce $ "kdeconnect-indicator &"
    -- spawnOnce $ "syncthingtray &"
-   spawnOnce $ "twmnd &"
+   spawnOnce $ myNotifManager ++ " &"
    spawnOnce $ myNextcloudSync
    spawnOnce $ "fcitx5 &"
    spawnOnce $ "numlockx &"

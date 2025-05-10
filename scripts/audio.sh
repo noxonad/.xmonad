@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 len=$1
 enable_color=$2
@@ -6,8 +6,8 @@ enable_color=$2
 #
 # Get sound level using amixer
 #
-is_on=$(amixer | grep -i -a6 "master" | grep -i "\[on\]" | wc -l)
-if [[ is_on -eq 2 ]]; then
+is_on=$(amixer | grep -i -a6 "master" | grep -ci "\[on\]")
+if [ "$is_on" -eq 2 ]; then
   left_source=$(amixer | grep -i -a6 "master" | grep -i "left:" | sed -e "s/.*\[\(.*\)\%\].*/\1/")
   right_source=$(amixer | grep -i -a6 "master" | grep -i "right:" | sed -e "s/.*\[\(.*\)\%\].*/\1/")
   sound_level=$(((left_source + right_source) / 2))
@@ -54,37 +54,37 @@ color_end="</fc>"
 # 6 param: end of color
 # return:  colored string
 #
-function color() {
-  if [[ $enable_color == "bi" ]]; then
-    bar+=$1
-  elif [[ $enable_color == "true" ]]; then
+color() {
+  if [ "$enable_color" = "bi" ]; then
+    bar="$bar$1"
+  elif [ "$enable_color" = "true" ]; then
     if [ $percentage -le 8 ]; then
-      bar+=$2
+      bar="$bar$2"
     elif [ $percentage -le 9 ]; then
-      bar+=$3
+      bar="$bar$3"
     else
-      bar+=$4
+      bar="$bar$4"
     fi
   fi
-  bar+=$5
-  if [[ $enable_color == "bi" ]] || [[ $enable_color == "true" ]]; then
-    bar+=$6
+  bar="$bar$5"
+  if [ "$enable_color" = "bi" ] || [ "$enable_color" = "true" ]; then
+    bar="$bar$6"
   fi
 }
 
-for i in $(seq 0 $len); do
-  if [[ $percentage -eq -1 ]] && [[ $i -eq $len ]]; then
+for i in $(seq 0 "$len"); do
+  if [ $percentage -eq -1 ] && [ "$i" -eq "$len" ]; then
     color $delimiter_mute_color_begin $delimiter_mute_color_begin $delimiter_mute_color_begin $delimiter_mute_color_begin $delimiter $color_end
     break
   fi
-  if [[ $((len - i)) -eq $percentage ]]; then
+  if [ $((len - i)) -eq $percentage ]; then
     color $delimiter_color_begin $delimiter_color_begin $delimiter_color_begin $delimiter_color_begin $delimiter $color_end
-  elif [[ $((len - i)) -lt $percentage ]]; then
+  elif [ $((len - i)) -lt $percentage ]; then
     color $active_color_begin $low_color_begin $med_color_begin $full_color_begin $chr $color_end
   else
     color $inactive_color_begin $inactive_color_begin $inactive_color_begin $inactive_color_begin $chr $color_end
   fi
 done
 
-echo $bar
+echo "$bar"
 exit 0

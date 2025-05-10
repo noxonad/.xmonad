@@ -9,13 +9,14 @@ Config {
   , commands      =
     [ Run Date "%d.%m.%Y (%a)" "date" 10
     , Run Date "%T" "time" 10
-    , Run Com "bash" ["/home/nox/.xmonad/scripts/batteryr.sh", "BAT0", "10", "true"] "bat_r" 30
-    , Run Com "bash" ["/home/nox/.xmonad/scripts/batteryl.sh", "BAT0", "10", "true"] "bat_l" 30
-    , Run Com "bash" ["/home/nox/.xmonad/scripts/audio.sh", "12", "true"] "audio" 10
-    , Run Com "bash" ["/home/nox/.xmonad/scripts/language.sh"] "language" 10
+    , Run Com "sh" ["/home/nox/.xmonad/scripts/batteryr.sh", "BAT0", "10", "true"] "bat_r" 30
+    , Run Com "sh" ["/home/nox/.xmonad/scripts/batteryl.sh", "BAT0", "10", "true"] "bat_l" 30
+    , Run Com "sh" ["/home/nox/.xmonad/scripts/audio.sh", "12", "true"] "audio" 10
+    , Run Com "sh" ["/home/nox/.xmonad/scripts/language.sh"] "language" 10
+    , Run Com "sh" ["/home/nox/.xmonad/scripts/network.sh", "wlan0", "eno1"] "net" 10
     , Run UnsafeXPropertyLog "_XMONAD_LOG_1"
     ] 
   , sepChar = "%"
   , alignSep = "}{"
-  , template = "%_XMONAD_LOG_1% } %bat_l% %time% %bat_r% { %audio% %date% %language%"
+  , template = "%_XMONAD_LOG_1% } %bat_l% %time% %bat_r% { %audio% %date% %language% %net%"
 }
